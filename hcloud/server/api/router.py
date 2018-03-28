@@ -1,4 +1,4 @@
-from hcloud.server.api.host.views import HostList
+from hcloud.server.api.host.server import HostList
 
 version = 'v1'
 

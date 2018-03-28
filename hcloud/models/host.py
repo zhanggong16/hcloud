@@ -66,7 +66,7 @@ class HostData(object):
                 "hp.privateip, hpe.privateip_extend, hpe.publicip, "
                 "hpe.publicip_extend, hpe.cpu, hpe.cpu_process, hpe.memory, "
                 "hpe.disk_space, hpe.disk_type, hp.remark, hp.create_time, hp.update_time "
-                "from {table_hp} hp join {table_hpe} hpe using(host_id)").format(table_hp=cls._table_hp, table_hpe=cls._table_hpe)
+                "1from {table_hp} hp join {table_hpe} hpe using(host_id)").format(table_hp=cls._table_hp, table_hpe=cls._table_hpe)
         rs = db.execute(sql).fetchall()
         db.commit()
         return [ cls(*line) for line in rs ] if rs else []

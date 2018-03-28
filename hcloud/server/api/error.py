@@ -1,14 +1,8 @@
-from flask import jsonify
+from flask_restful import abort
 
-class ApiError(object):
-    
+class ApiException(object):
+
     @classmethod
-    def DataReturn(cls, message):
-        status_code = 501
-        response = jsonify({
-            'status': status_code,
-            'description': 'Failed to obtain data from MySQL.',
-            'message': message
-        })
-        response.status_code = status_code
-        return response
+    def nodatareturn(cls, e):
+        abort(501, message=str(e), error="No data return from MySQL.")
+
