@@ -10,6 +10,7 @@ class HostList(Resource):
     '''get host list from MySQL, api'''    
 
     hostlist_fields = HostListViews.hostlist_fields    
+    hostlist_parser = HostListViews.parser
 
     @marshal_with(hostlist_fields)    
     def get(self):
@@ -17,4 +18,11 @@ class HostList(Resource):
             data_res = Host.lst()
         except Exception as e:
             ApiException.nodatareturn(e)
-        return {"data": data_res}
+        return {'data': data_res, 'total': len(data_res)}
+
+    
+    def post(self):
+        args = HostList.hostlist_parser.parse_args()
+        host_id = args['host_id']
+        return host_id
+    
