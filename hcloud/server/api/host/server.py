@@ -18,3 +18,4 @@ class HostList(Resource):
         except Exception as e:
             ApiException.nodatareturn(e)
         return {"data": data_res}
+
