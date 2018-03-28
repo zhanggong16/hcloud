@@ -17,12 +17,24 @@ class HostList(Resource):
         try:
             data_res = Host.lst()
         except Exception as e:
-            ApiException.nodatareturn(e)
+            ApiException.handler_hcloud_error(str(e))
         return {'data': data_res, 'total': len(data_res)}
 
-    
     def post(self):
+        ''' add host '''
         args = HostList.hostlist_parser.parse_args()
-        host_id = args['host_id']
-        return host_id
-    
+        name = args['name']
+        description = args['description']
+        device_key = args['device_key']
+        privateip = args['privateip']
+        os_type = args['os_type']
+        state = args['state']
+        attribute = args['attribute']
+        region = args['region']
+        remark = args['remark']
+        try:
+            data_res = Host.add_host(name, description, device_key, privateip, os_type, state, attribute, region, remark)
+        except Exception as e:
+            ApiException.handler_hcloud_error(str(e))    
+        return {'status':'ok'}, 201
+            
