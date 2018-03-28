@@ -37,4 +37,3 @@ class HostList(Resource):
         except Exception as e:
             ApiException.handler_hcloud_error(str(e))    
         return {'status':'ok'}, 201
-            
