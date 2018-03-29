@@ -1,8 +1,8 @@
 from flask_restful import abort
 
 class ApiException(object):
+    ''' Raise a HTTPException '''
 
     @classmethod
-    def nodatareturn(cls, e):
-        abort(501, message=str(e), error="No data return from MySQL.")
-
+    def handler_hcloud_error(cls, e):
+        abort(505, message=str(e))

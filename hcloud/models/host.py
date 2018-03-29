@@ -70,3 +70,30 @@ class HostData(object):
         rs = db.execute(sql).fetchall()
         db.commit()
         return [ cls(*line) for line in rs ] if rs else []
+
+    @classmethod
+    def add(cls, host_id, name, description, device_key, privateip, os_type, state, attribute, region, remark):
+        sql = ("insert into {table} "
+               "(host_id, name, description, device_key, privateip, os_type, state, attribute, region, remark) values "
+               "(:host_id, :name, :description, :device_key, :privateip, "
+               ":os_type, :state, :attribute, :region, :remark)").format(table=cls._table_hp)
+        params = dict(
+                host_id=host_id,
+                name=name,
+                description=description,
+                device_key=device_key,
+                privateip=privateip,
+                os_type=os_type,
+                state=state,
+                attribute=attribute,
+                region=region,
+                remark=remark)
+        r = db.execute(sql, params=params)
+        if r.lastrowid:
+            db.commit()
+            return r.lastrowid
+        db.rollback()
+
+
+
+    

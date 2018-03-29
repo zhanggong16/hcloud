@@ -36,6 +36,12 @@ class HostListViews(object):
     
     #request data
     parser = reqparse.RequestParser()
-    parser.add_argument('host_id', type=str, required=True)
-
-
+    parser.add_argument('name', type=str)
+    parser.add_argument('description', type=str)
+    parser.add_argument('device_key', type=str)
+    parser.add_argument('privateip', type=str, required=True)
+    parser.add_argument('os_type', type=int, required=True)
+    parser.add_argument('state', type=int, required=True)
+    parser.add_argument('attribute', type=int, required=True)
+    parser.add_argument('region', type=int, required=True)
+    parser.add_argument('remark', type=str)
