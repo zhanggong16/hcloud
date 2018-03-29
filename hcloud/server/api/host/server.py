@@ -18,10 +18,6 @@ class HostList(Resource):
             data_res = Host.lst()
         except Exception as e:
             ApiException.nodatareturn(e)
-<<<<<<< HEAD
-        return {"data": data_res}
-
-=======
         return {'data': data_res, 'total': len(data_res)}
 
     
@@ -29,5 +25,3 @@ class HostList(Resource):
         args = HostList.hostlist_parser.parse_args()
         host_id = args['host_id']
         return host_id
-    
->>>>>>> d0b2b8bd649b6e98e5cd5c3de9c66db6d108461e
