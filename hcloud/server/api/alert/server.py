@@ -3,7 +3,7 @@ from flask_restful import abort
 from flask import request
 from hcloud.server.api.alert.controller import AlertManager
 
-class Alert(Resource):
+class AlertAPI(Resource):
 
     def post(self):
         try:
