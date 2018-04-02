@@ -2,9 +2,9 @@ from flask_restful import Resource
 from flask_restful import reqparse
 from flask_restful import marshal_with
 from hcloud.server.api.error import ApiException
+from hcloud.utils import logging
 from .controller import Host
 from .views import HostViews
-
 
 class HostListAPI(Resource):
     '''get host list from MySQL, api'''    

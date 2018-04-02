@@ -1,15 +1,16 @@
 import os
-import logging
+import logging as lg
 from envcfg.json.hcloud import EXCEPTION_LOG_FILE
-
-def error_logger():
+ 
+def logger():
     logname = EXCEPTION_LOG_FILE
     logpath = r'%s/logs' % os.getcwd()
     logfile = r'%s/%s' % (logpath, logname)
     if not os.path.isdir(logpath):
         os.system("mkdir -p %s" % logpath)
-    format='%(asctime)s [%(filename)s][%(levelname)s] %(message)s'
-    logging.basicConfig(level = logging.DEBUG, filename = logfile, filemode = 'a', format = format)
-    logger = logging.getLogger()
+    format = '%(asctime)s [%(filename)s][%(levelname)s] %(message)s'
+    lg.basicConfig(level=lg.DEBUG, filename=logfile, filemode='a', format=format)
+    logger = lg.getLogger()
     return logger
 
+logging = logger()

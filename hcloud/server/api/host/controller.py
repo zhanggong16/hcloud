@@ -33,7 +33,3 @@ class Host(object):
         host_id, name, description, device_key, state, region, remark, dns, project_id = update
         rs = HostData.update_hostpool_by_host_id(host_id, name, description, device_key, state, region, remark, dns, project_id)
         return rs
-
-
-
-
