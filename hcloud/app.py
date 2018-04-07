@@ -1,10 +1,14 @@
 from flask import Flask
 from flask_restful import Api
-from werkzeug.utils import import_string
 from flask import got_request_exception
-from hcloud.utils import logger
+from werkzeug.utils import import_string
+from hcloud.utils import logging
 
 apis_lst = import_string('hcloud.server.api.router:apis')
+
+blueprints = [
+    'hcloud.server.test.views:bp'
+]
 
 def create_app(config=None):
     app = Flask(__name__)
@@ -18,8 +22,12 @@ def create_app(config=None):
         api_class, api_path = api_name
         api.add_resource(api_class, api_path)
     
+    #define blueprint
+    for blueprint_name in blueprints:
+        blueprint = import_string(blueprint_name)
+        app.register_blueprint(blueprint)
+
     return app
 
 def log_exception(sender, exception, **extra):
-    logging = logger()
     logging.error('Got exception: %s from %s.' % (exception, sender))   

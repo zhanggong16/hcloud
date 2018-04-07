@@ -1,8 +1,8 @@
 from flask_restful import Resource
 from flask_restful import reqparse
 from flask_restful import marshal_with
-from hcloud.server.api.error import ApiException
-from hcloud.utils import logging
+from hcloud.exceptions import ModelsDBError
+from hcloud.exceptions import NotFound
 from .controller import Host
 from .views import HostViews
 
@@ -17,7 +17,7 @@ class HostListAPI(Resource):
         try:
             data_res = Host.lst()
         except Exception as e:
-            ApiException.get_data_from_mysql_error(str(e))
+            raise ModelsDBError(str(e))
         return {'data': data_res, 'total': len(data_res)}
 
     def post(self):
@@ -37,7 +37,7 @@ class HostListAPI(Resource):
         try:
             data_res = Host.add_hostpool(name, description, device_key, privateip, os_type, state, attribute, region, remark, dns, project_id)
         except Exception as e:
-            ApiException.get_data_from_mysql_error(str(e))    
+            raise ModelsDBError(str(e))
         return {'id': data_res}, 201
 
 class HostAPI(Resource):
@@ -45,16 +45,16 @@ class HostAPI(Resource):
     host_parser = HostViews.parser_host
 
     def delete(self, host_id):
-        abort_if_host_id_doesnt_exist_hostpool(host_id)
+        _abort_if_host_id_doesnt_exist_hostpool(host_id)
         ###if host id doesnt exist instance pool / db pool       
         try:
             res = Host.delete_from_hostpool(host_id)
         except Exception as e:
-            ApiException.get_data_from_mysql_error(str(e))
+            raise ModelsDBError(str(e))
         return {'host_id': res}, 200
 
     def put(self, host_id):
-        abort_if_host_id_doesnt_exist_hostpool(host_id)
+        _abort_if_host_id_doesnt_exist_hostpool(host_id)
         args = HostAPI.host_parser.parse_args()
         name = args['name']
         description = args['description']
@@ -67,12 +67,12 @@ class HostAPI(Resource):
         try:
             res = Host.update_hostpool(host_id, name, description, device_key, state, region, remark, dns, project_id)
         except Exception as e:
-            ApiException.get_data_from_mysql_error(str(e))
+            raise ModelsDBError(str(e))
         return {'host_id': res}, 200
     
 
 
-def abort_if_host_id_doesnt_exist_hostpool(host_id):
+def _abort_if_host_id_doesnt_exist_hostpool(host_id):
     res = Host.get_id_from_hostpool(host_id)
     if not res:
-        ApiException.data_not_found(host_id)
+        raise NotFound("Resource %s not exist" % host_id)
