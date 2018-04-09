@@ -116,7 +116,6 @@ class HostData(object):
         rs = db.execute(sql, params=params).fetchone()
         db.commit()
         return rs[0] if rs else ''
-
     
     @classmethod
     def delete_hostpool_by_host_id(cls, host_id):

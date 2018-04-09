@@ -15,3 +15,4 @@ venv
 .coverage
 logs/*
 .idea
+celerybeat-schedule

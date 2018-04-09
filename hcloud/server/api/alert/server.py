@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask_restful import abort
 from flask import request
-from hcloud.server.api.error import ApiException
+from hcloud.exceptions import Error
 from hcloud.server.api.alert.controller import AlertManager
 from hcloud.server.api.alert.controller import Ansible
 from hcloud.server.api.alert.controller import Promethues
@@ -47,8 +47,7 @@ class AlertRules(Resource):
             data_res = AlertManager.create_alert_rules(host_id, service, monitor_items,
                                                        statistical_period, statistical_approach, compute_mode, threshold_value)
         except Exception as e:
-            logging.info(e)
-            ApiException.handler_hcloud_error(str(e))
+            raise Error(e)
         return {'status': 'ok'}, 201
 
     def put(self, alert_rules_id):
@@ -61,5 +60,5 @@ class AlertRules(Resource):
             data_res = AlertManager.update_alert_rules(alert_rules_id, statistical_period, statistical_approach, compute_mode, threshold_value)
 
         except Exception as e:
-           ApiException.handler_hcloud_error(str(e))
+            raise Error(str(e))
         return {'status': 'ok'}, 201

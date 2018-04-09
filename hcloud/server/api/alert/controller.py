@@ -4,7 +4,7 @@ import re
 import subprocess
 import requests
 from hcloud.models.alert_rules import AlertRulesData
-from hcloud.server.api.error import ApiException
+from hcloud.exceptions import Error
 from hcloud import utils
 
 YML_LOCATION = '/tmp/yaml_files/'
@@ -35,7 +35,7 @@ class Promethues(object):
         r = requests.post(reload_url)
         if r.status_code != 200:
             msg = "promethues reload failed."
-            ApiException.handler_hcloud_error(str(msg))
+            raise Error(msg)
 
 class Ansible(object):
     @classmethod
@@ -61,7 +61,7 @@ class Ansible(object):
             fobj = open(inv_file, 'w')
         except Exception, e:
             msg = "Can't open file {0}: {1}".format(inv_file, e)
-            ApiException.handler_hcloud_error(str(msg))
+            raise Error(msg)
 
         fobj.write("[target_host]\n")
         fobj.write(host_ip + "\n")
@@ -79,7 +79,7 @@ class Ansible(object):
             fobj = open(yml_file, 'w')
         except Exception, e:
             msg = "Can't open file {0}: {1}".format(yml_file, e)
-            ApiException.handler_hcloud_error(str(msg))
+            raise Error(msg)
 
         fobj.write("---\n")
         fobj.write("- name: install target_host\n")
@@ -132,12 +132,12 @@ class Ansible(object):
                 unreachable_count = int(r2.group(1))
                 if failed_count != 0 or unreachable_count != 0:
                     msg =  "There are {0} ansible-playbook sub task run into error".format(failed_count + unreachable_count)
-                    ApiException.handler_hcloud_error(str(msg))
+                    raise Error(msg)
 
             if flag is False:
                 msg = "ansible-playbook command execute failed."
-                ApiException.handler_hcloud_error(str(msg))
+                raise Error(msg)
         else:
             msg = "Can't found {0}".format(yml_file)
-            ApiException.handler_hcloud_error(str(msg))
+            raise Error(msg)
 
