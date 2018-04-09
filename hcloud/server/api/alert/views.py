@@ -19,11 +19,11 @@ class AlertRulesViews(object):
 
     # request data
     parser = reqparse.RequestParser()
-    parser.add_argument('alert_rules_id', type=str, required=True)
     parser.add_argument('host_id', type=str, required=True)
+    parser.add_argument('port', type=int, required=True)
     parser.add_argument('service', type=str, required=True)
     parser.add_argument('monitor_items', type=str, required=True)
-    parser.add_argument('statistical_period', type=int, required=True)
-    parser.add_argument('statistical_approach', type=int, required=True)
-    parser.add_argument('compute_mode', type=int, required=True)
+    parser.add_argument('statistical_period', type=str, required=True)
+    parser.add_argument('statistical_approach', type=str, required=True)
+    parser.add_argument('compute_mode', type=str, required=True)
     parser.add_argument('threshold_value', type=int, required=True)

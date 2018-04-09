@@ -1,5 +1,4 @@
 from hcloud.libs.db.mysql import db
-S
 class AlertRulesData(object):
     _table_ar = 'alert_rules'
 
