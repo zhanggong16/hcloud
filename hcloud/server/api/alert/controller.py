@@ -1,11 +1,11 @@
-import uuid
 import os
 import re
 import subprocess
 import requests
 from hcloud.models.alert_rules import AlertRulesData
 from hcloud.exceptions import Error
-from hcloud import utils
+from hcloud.libs.celery.celery import celery
+from hcloud.utils import logging
 
 YML_LOCATION = '/tmp/yaml_files/'
 RULES_LOCATION = '/opt/monitor/server/rules/'
@@ -17,9 +17,8 @@ class AlertManager(object):
 
     @classmethod
     def create_alert_rules(cls, *add):
-        host_id, service, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value = add
-        alert_rules_id = str(uuid.uuid1())
-        rs = AlertRulesData.add(alert_rules_id, host_id, service, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value)
+        alert_rules_id, host_id, service, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value, status = add
+        rs = AlertRulesData.add(alert_rules_id, host_id, service, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value, status)
         return rs
 
     @classmethod
@@ -27,6 +26,14 @@ class AlertManager(object):
         alert_rules_id, statistical_period, statistical_approach, compute_mode, threshold_value = update
         rs = AlertRulesData.update(alert_rules_id,statistical_period, statistical_approach, compute_mode, threshold_value)
         return rs
+
+    @classmethod
+    def get_alert_rules(cls, alert_rules_id):
+        rs = AlertRulesData.get_alert_rules(alert_rules_id)
+        if rs:
+            return [line.dump() for line in rs]
+        else:
+            return
 
 class Promethues(object):
     @classmethod
@@ -99,22 +106,23 @@ class Ansible(object):
         fobj.close()
         return yml_file
 
-    @classmethod
-    def execute(cls, yml_file, inv_file):
-        failed_count = 0
-        unreachable_count = 0
-        tmp = []
-        if os.path.exists(yml_file):
-            cmd = "ansible-playbook {0} -i {1}".format(yml_file, inv_file)
-
-            # status, output = commands.getstatusoutput(cmd)
+    @celery.task
+    def async_cmd_task(cmd, alert_rules_id):
+        msg = ""
+        try:
+            # p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+            # (output, err) = p.communicate()
+            # p_status = p.wait()
             popen = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
-            pid = popen.pid
+            #check_results
+            failed_count = 0
+            unreachable_count = 0
+            tmp = []
             while True:
                 line = popen.stdout.readline().replace('*', '').strip()
                 if line != '':
                     tmp.append(line)
-                    utils.logging.info(tmp)
+                    logging.info(tmp)
                 if subprocess.Popen.poll(popen) is not None:
                     break
 
@@ -131,13 +139,38 @@ class Ansible(object):
                 failed_count = int(r1.group(1))
                 unreachable_count = int(r2.group(1))
                 if failed_count != 0 or unreachable_count != 0:
-                    msg =  "There are {0} ansible-playbook sub task run into error".format(failed_count + unreachable_count)
-                    raise Error(msg)
+                    msg += "There are {0} ansible-playbook sub task run into error".format(
+                        failed_count + unreachable_count)
 
             if flag is False:
-                msg = "ansible-playbook command execute failed."
-                raise Error(msg)
+                msg += "ansible-playbook command execute failed."
+        except Exception as e:
+            msg += str(e)
+
+        try:
+            if msg != "":
+                logging.error(msg)
+                AlertRulesData.update_status(alert_rules_id, 2)
+            else:
+                AlertRulesData.update_status(alert_rules_id, 1)
+                url = 'http://localhost:9090'
+                Promethues.reload(url)
+        except Exception as e:
+            logging.error(e)
+
+        return {'status': popen.wait(), 'result': msg}
+
+    @classmethod
+    def async_cmd_run(cls, cmd, alert_rules_id, expires=3600):
+        res = cls.async_cmd_task.apply_async(args=[cmd, alert_rules_id], expires=expires)
+
+    @classmethod
+    def execute(cls, yml_file, inv_file, alert_rules_id):
+        if os.path.exists(yml_file):
+            cmd = "ansible-playbook {0} -i {1}".format(yml_file, inv_file)
+            cls.async_cmd_run(cmd, alert_rules_id)
         else:
             msg = "Can't found {0}".format(yml_file)
             raise Error(msg)
+
 

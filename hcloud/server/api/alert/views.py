@@ -13,6 +13,7 @@ class AlertRulesViews(object):
     alert_rules_data_fields['statistical_approach'] = fields.String(attribute='statistical_approach')
     alert_rules_data_fields['compute_mode'] = fields.String(attribute='compute_mode')
     alert_rules_data_fields['threshold_value'] = fields.String(attribute='threshold_value')
+    alert_rules_data_fields['status'] = fields.String(attribute='status')
     alert_rules_data_fields['create_time'] = fields.String(attribute='create_time')
     alert_rules_data_fields['update_time'] = fields.String(attribute='update_time')
 
