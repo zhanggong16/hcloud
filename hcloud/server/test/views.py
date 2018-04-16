@@ -1,6 +1,5 @@
 from flask import Blueprint
-from flask import request
-from hcloud.utils import async_cmd_run, sync_cmd_run
+from hcloud.task.task import async_cmd_run, sync_cmd_run
 
 bp = Blueprint('test', __name__)
 

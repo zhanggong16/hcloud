@@ -1,6 +1,7 @@
 import subprocess
 from hcloud.libs.celery.celery import celery
 
+
 @celery.task
 def async_cmd_task(cmd):
     try:
@@ -10,3 +11,6 @@ def async_cmd_task(cmd):
     except Exception as e:
         return {'status': -1, 'result': str(e)}
     return {'status': p_status, 'result': output.strip()}
+
+
+

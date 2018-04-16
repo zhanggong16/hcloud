@@ -5,10 +5,8 @@ from flask import request
 from hcloud.exceptions import Error
 from hcloud.server.api.alert.controller import AlertManager
 from hcloud.server.api.alert.controller import Ansible
-from hcloud.server.api.alert.controller import Promethues
 from hcloud.exceptions import ModelsDBError
 from .views import AlertRulesViews
-from hcloud.utils import logging
 
 
 
