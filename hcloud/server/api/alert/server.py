@@ -1,6 +1,5 @@
 import uuid
 from flask_restful import Resource, marshal_with
-from flask_restful import abort
 from flask import request
 from hcloud.server.api.alert.controller import AlertManager
 from hcloud.server.api.alert.controller import Ansible
@@ -8,14 +7,14 @@ from hcloud.exceptions import Error
 from hcloud.exceptions import ModelsDBError
 from .views import AlertRulesViews
 
-
 class SendToAlert(Resource):
-    def post(self):
-        try:
-            json_data = request.get_json(force=True)
-            AlertManager.send(json_data)
-        except Exception as e:
-            abort(501, message=str(e), error="Alert post error")
+    pass
+#    def post(self):
+#        try:
+#            json_data = request.get_json(force=True)
+#            AlertManager.send(json_data)
+#        except Exception as e:
+#            abort(501, message=str(e), error="Alert post error")
 
 
 class AlertRules(Resource):
@@ -42,12 +41,13 @@ class AlertRules(Resource):
         compute_mode = args['compute_mode']
         threshold_value = args['threshold_value']
         try:
-        #    # running
+            # running
             alert_rules_id = str(uuid.uuid1())
-        #    data_res = AlertManager.create_alert_rules(alert_rules_id, host_id, service, monitor_items,
-        #                                               statistical_period, statistical_approach, compute_mode,
-        #                                               threshold_value, 0)
-        #    Ansible.check(host_id)
+            # insert mysql
+            data_res = AlertManager.create_alert_rules(alert_rules_id, host_id, service, monitor_items,
+                                                      statistical_period, statistical_approach, compute_mode,
+                                                      threshold_value, 0)
+            Ansible.check(host_id)
             inv_file = Ansible.init_target_yaml(host_id)
             instance = host_id + ":" + str(port)
             yml_file = Ansible.init_metrics_yaml(service, monitor_items, host_id, instance, threshold_value, statistical_period, compute_mode)

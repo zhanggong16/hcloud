@@ -1,1 +1,1 @@
-CELERY_IMPORTS = ['hcloud.task.common']
+CELERY_IMPORTS = ['hcloud.task.alert']
