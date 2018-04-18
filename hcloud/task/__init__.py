@@ -1,1 +1,1 @@
-CELERY_IMPORTS = ('hcloud.task.common', 'hcloud.task.ansible')
+CELERY_IMPORTS = ['hcloud.task.common']

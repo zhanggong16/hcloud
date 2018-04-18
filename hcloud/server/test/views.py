@@ -7,4 +7,6 @@ bp = Blueprint('test', __name__)
 def test():
     cmd = "touch /tmp/zhanggong"
     async_cmd_run(cmd)
-    return 'hello,zhanggong'
+    return 'zhanggong'
+    #res = sync_cmd_run(cmd)
+    #return 'hello, %s' % res
