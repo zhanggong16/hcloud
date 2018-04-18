@@ -11,6 +11,9 @@ def push_alert(cmd):
         return {'status': -1, 'result': str(e)}
     return {'status': p_status, 'result': output.strip()}
 
+def _push_alert_db():
+    pass
+
 
 @celery.task
 def async_cmd_task(cmd):
@@ -21,4 +24,3 @@ def async_cmd_task(cmd):
     except Exception as e:
         return {'status': -1, 'result': str(e)}
     return {'status': p_status, 'result': output.strip()}
-

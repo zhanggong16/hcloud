@@ -20,7 +20,7 @@ def celery_worker(w):
     from hcloud.libs.celery.celery import celery as celery_app
     from hcloud.config import CELERY_LOGLEVEL, CELERY_LOG_FILE
     celery_worker = worker(app=celery_app)
-    celery_worker.run(concurrency=w, loglevel=CELERY_LOGLEVEL, logfile=CELERY_LOG_FILE)
+    celery_worker.run(concurrency=w, loglevel=CELERY_LOGLEVEL, logfile=CELERY_LOG_FILE, hostname='w1@%%h')
 
 
 cli.add_command(celery_beater)

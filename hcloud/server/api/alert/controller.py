@@ -1,13 +1,10 @@
 import os
-import re
-import subprocess
-import requests
 from hcloud.models.alert_rules import AlertRulesData
 from hcloud.exceptions import Error
 from hcloud.utils import logging
-from hcloud.utils import async_cmd_run
 from hcloud.task.common import async_cmd_task
 from hcloud.task.common import push_alert
+#from hcloud.task.ansible import async_ansible_task
 
 YML_LOCATION = '/tmp/yaml_files/'
 RULES_LOCATION = '/opt/monitor/server/rules/'
@@ -37,14 +34,6 @@ class AlertManager(object):
         else:
             return
 
-class Promethues(object):
-    @classmethod
-    def reload(cls, url):
-        reload_url = url + '/-/reload'
-        r = requests.post(reload_url)
-        if r.status_code != 200:
-            msg = "promethues reload failed."
-            raise Error(msg)
 
 class Ansible(object):
     
@@ -166,6 +155,10 @@ class Ansible(object):
     #@classmethod
     #def async_cmd_run(cls, cmd, alert_rules_id, expires=3600):
     #    res = cls.async_cmd_task.apply_async(args=[cmd, alert_rules_id], expires=expires)
+    
+    #@classmethod
+    #def async_cmd_run(cls, cmd, alert_rules_id, expires=3600):
+    #    res = async_ansible_task.apply_async(args=[cmd, alert_rules_id, ], expires=expires)
 
     @classmethod
     def execute(cls, yml_file, inv_file, alert_rules_id):

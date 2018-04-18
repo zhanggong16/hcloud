@@ -4,7 +4,6 @@ from eventlet.green import subprocess
 from hcloud.task.common import async_cmd_task
 from envcfg.json.hcloud import EXCEPTION_LOG_FILE
 
-
 def logger():
     logname = EXCEPTION_LOG_FILE
     logpath = r'%s/logs' % os.getcwd()
