@@ -2,14 +2,12 @@ import uuid
 from flask_restful import Resource, marshal_with
 from flask_restful import abort
 from flask import request
-from hcloud.exceptions import Error
 from hcloud.server.api.alert.controller import AlertManager
 from hcloud.server.api.alert.controller import Ansible
 from hcloud.server.api.alert.controller import Promethues
+from hcloud.exceptions import Error
 from hcloud.exceptions import ModelsDBError
 from .views import AlertRulesViews
-from hcloud.utils import logging
-
 
 
 class SendToAlert(Resource):
@@ -44,14 +42,13 @@ class AlertRules(Resource):
         statistical_approach = args['statistical_approach']
         compute_mode = args['compute_mode']
         threshold_value = args['threshold_value']
-        #need write to config file
         try:
-            # running
+        #    # running
             alert_rules_id = str(uuid.uuid1())
-            data_res = AlertManager.create_alert_rules(alert_rules_id, host_id, service, monitor_items,
-                                                       statistical_period, statistical_approach, compute_mode,
-                                                       threshold_value, 0)
-            Ansible.check(host_id)
+        #    data_res = AlertManager.create_alert_rules(alert_rules_id, host_id, service, monitor_items,
+        #                                               statistical_period, statistical_approach, compute_mode,
+        #                                               threshold_value, 0)
+        #    Ansible.check(host_id)
             inv_file = Ansible.init_target_yaml(host_id)
             instance = host_id + ":" + str(port)
             yml_file = Ansible.init_metrics_yaml(service, monitor_items, host_id, instance, threshold_value, statistical_period, compute_mode)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import requests
 
-hostlist = 'http://localhost:6000/api/v1/alert_rules'
+hostlist = 'http://localhost:5000/api/v1/alert_rules'
 
 
 payload = {

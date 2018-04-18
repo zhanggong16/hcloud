@@ -4,8 +4,10 @@ import subprocess
 import requests
 from hcloud.models.alert_rules import AlertRulesData
 from hcloud.exceptions import Error
-from hcloud.libs.celery.celery import celery
 from hcloud.utils import logging
+from hcloud.utils import async_cmd_run
+from hcloud.task.common import async_cmd_task
+from hcloud.task.common import push_alert
 
 YML_LOCATION = '/tmp/yaml_files/'
 RULES_LOCATION = '/opt/monitor/server/rules/'
@@ -45,6 +47,7 @@ class Promethues(object):
             raise Error(msg)
 
 class Ansible(object):
+    
     @classmethod
     def check(cls, host_ip):
         # try:
@@ -106,7 +109,7 @@ class Ansible(object):
         fobj.close()
         return yml_file
 
-    @celery.task
+    #@celery.task
     def async_cmd_task(cmd, alert_rules_id):
         msg = ""
         try:
@@ -160,15 +163,17 @@ class Ansible(object):
 
         return {'status': popen.wait(), 'result': msg}
 
-    @classmethod
-    def async_cmd_run(cls, cmd, alert_rules_id, expires=3600):
-        res = cls.async_cmd_task.apply_async(args=[cmd, alert_rules_id], expires=expires)
+    #@classmethod
+    #def async_cmd_run(cls, cmd, alert_rules_id, expires=3600):
+    #    res = cls.async_cmd_task.apply_async(args=[cmd, alert_rules_id], expires=expires)
 
     @classmethod
     def execute(cls, yml_file, inv_file, alert_rules_id):
         if os.path.exists(yml_file):
             cmd = "ansible-playbook {0} -i {1}".format(yml_file, inv_file)
-            cls.async_cmd_run(cmd, alert_rules_id)
+            #async_cmd_task.delay(cmd)
+            #async_cmd_run(cmd)         
+            push_alert.delay(cmd)
         else:
             msg = "Can't found {0}".format(yml_file)
             raise Error(msg)
