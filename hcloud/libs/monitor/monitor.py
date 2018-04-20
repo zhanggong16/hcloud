@@ -1,5 +1,5 @@
 import requests
-from hcloud.exceptions import Error
+from hcloud.exceptions import MonitorError
 
 class Monitor(object):
     
@@ -9,4 +9,4 @@ class Monitor(object):
         r = requests.post(reload_url)
         if r.status_code != 200:
             msg = "Monitor reload failed."
-            raise Error(msg)
+            raise MonitorError(msg)
