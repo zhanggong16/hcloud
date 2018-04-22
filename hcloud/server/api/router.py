@@ -1,7 +1,8 @@
 from hcloud.server.api.host.server import HostListAPI
 from hcloud.server.api.host.server import HostAPI
-#from hcloud.server.api.alert.server import SendToAlert
 from hcloud.server.api.alert.server import AlertRules
+#from hcloud.server.api.alert.server import SendToAlert
+
 
 version = 'v1'
 
