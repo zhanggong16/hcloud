@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from flask import got_request_exception
 from werkzeug.utils import import_string
-from hcloud.utils import logging
+from hcloud.logger import logging
 
 apis_lst = import_string('hcloud.server.api.router:apis')
 

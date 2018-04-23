@@ -1,12 +1,7 @@
 import os
-import re
-import subprocess
-import requests
-from hcloud.models.alert_rules import AlertRulesData
 from hcloud.exceptions import Error
-from hcloud.logger import logging
-from hcloud.task.common import async_cmd_task
 from hcloud.task.common import push_alert
+from hcloud.models.alert_rules import AlertRulesData
 
 YML_LOCATION = '/tmp/yaml_files/'
 RULES_LOCATION = '/opt/monitor/server/rules/'
@@ -36,9 +31,7 @@ class AlertManager(object):
         else:
             return
 
-
 class Ansible(object):
-    
     @classmethod
     def check(cls, host_ip):
         # try:
@@ -93,14 +86,16 @@ class Ansible(object):
         fobj.write("    compute_mode: '{0}'\n".format(compute_mode))
         fobj.write("  tasks:\n")
         yml_rules_path = os.path.abspath("hcloud/server/api/alert/files/")
-        yml_rules_rec =  service + "_" + metrics + ".yml"
+        yml_rules_rec = service + "_" + metrics + ".yml"
         dest_file = RULES_LOCATION + instance.replace(":", "_") + "_" + yml_rules_rec
-        fobj.write("    - template: src=" + yml_rules_path + "/" + yml_rules_rec + " dest={0} mode=640 force=yes\n".format(dest_file))
+        fobj.write \
+            ("    - template: src=" + yml_rules_path + "/" + yml_rules_rec + " dest={0} mode=640 force=yes\n".format
+            (dest_file))
 
         fobj.close()
         return yml_file
 
-    #@celery.task
+    # @celery.task
     # def async_cmd_task(cmd, alert_rules_id):
     #     msg = ""
     #     try:
@@ -154,16 +149,16 @@ class Ansible(object):
     #
     #     return {'status': popen.wait(), 'result': msg}
 
-    #@classmethod
-    #def async_cmd_run(cls, cmd, alert_rules_id, expires=3600):
+    # @classmethod
+    # def async_cmd_run(cls, cmd, alert_rules_id, expires=3600):
     #    res = cls.async_cmd_task.apply_async(args=[cmd, alert_rules_id], expires=expires)
 
     @classmethod
     def execute(cls, yml_file, inv_file, alert_rules_id):
         if os.path.exists(yml_file):
             cmd = "ansible-playbook {0} -i {1}".format(yml_file, inv_file)
-            #async_cmd_task.delay(cmd)
-            #async_cmd_run(cmd)         
+            # async_cmd_task.delay(cmd)
+            # async_cmd_run(cmd)
             push_alert.delay(cmd, alert_rules_id)
         else:
             msg = "Can't found {0}".format(yml_file)

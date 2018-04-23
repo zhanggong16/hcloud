@@ -2,7 +2,6 @@ import os
 from eventlet.green import subprocess
 from hcloud.task.common import async_cmd_task
 from hcloud.logger import logging
-
 def async_cmd_run(cmd, expires=3600):
     res_dict = async_cmd_task.apply_async(args=[cmd, ], expires=expires)
 
