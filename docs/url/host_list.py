@@ -22,4 +22,4 @@ r = requests.get(hostlist)
 rs = r.json()
 
 print rs
-print r.status_code
+print r.headers

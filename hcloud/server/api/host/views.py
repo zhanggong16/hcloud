@@ -3,7 +3,7 @@ from flask_restful import fields
 
 class HostsViews(object):
 
-    #return data schema
+    #return host list
     hostlist_data_fields = {}
     hostlist_data_fields['host_key'] = fields.String(attribute='host_key')
     hostlist_data_fields['user_id'] = fields.String(attribute='user_id')
@@ -29,27 +29,3 @@ class HostsViews(object):
     }
 
     
-    #hostlist post request data
-    parser = reqparse.RequestParser()
-    parser.add_argument('name', type=str)
-    parser.add_argument('description', type=str)
-    parser.add_argument('device_key', type=str)
-    parser.add_argument('dns', type=str)
-    parser.add_argument('project_id', type=str)
-    parser.add_argument('privateip', type=str, required=True)
-    parser.add_argument('os_type', type=int, required=True)
-    parser.add_argument('state', type=int, required=True)
-    parser.add_argument('attribute', type=int, required=True)
-    parser.add_argument('region', type=int, required=True)
-    parser.add_argument('remark', type=str)
-
-    #host put request data
-    parser_host = reqparse.RequestParser()
-    parser_host.add_argument('name', type=str)
-    parser_host.add_argument('description', type=str)
-    parser_host.add_argument('device_key', type=str)
-    parser_host.add_argument('state', type=int, required=True)
-    parser_host.add_argument('region', type=int, required=True)
-    parser_host.add_argument('dns', type=str)
-    parser_host.add_argument('project_id', type=str)
-    parser_host.add_argument('remark', type=str)

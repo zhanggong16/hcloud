@@ -5,14 +5,12 @@ from hcloud.exceptions import NotFound
 from .controller import HostsController
 from .views import HostsViews
 
-header = {'Access-Control-Allow-Origin': '*'}
 
 class HostListAPI(Resource):
     '''get host list'''
 
-    hostlist_fields = HostsViews.hostlist_fields    
-    hostlist_parser = HostsViews.parser
-
+    hostlist_fields = HostsViews.hostlist_fields
+    
     @marshal_with(hostlist_fields)    
     def get(self):
         try:
@@ -21,6 +19,7 @@ class HostListAPI(Resource):
             raise ModelsDBError(str(e))
         resp = {'data': data_res, 'message': 'undefine', 'status': 'success'}
         return resp
+
 
 class HostAPI(Resource):
     pass
