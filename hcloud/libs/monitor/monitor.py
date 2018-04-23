@@ -1,10 +1,13 @@
 import requests
-from hcloud.exceptions import MonitorError
-from hcloud.config import MONITOR_SERVER
+import json
+#from hcloud.exceptions import MonitorError
 
-server = MONITOR_SERVER
+server = 'http://localhost:9090'
 
 class Monitor(object):
+
+    def __init__(self):
+        print server
 
     @staticmethod
     def post(url, data={}):
@@ -23,10 +26,12 @@ class Monitor(object):
     def reload(self):
         url = '/-/reload'
         status = self.post(url)
-        return True if status in [200, 201] else False
+        return True if status in [200] else False
 
     def summary(self):
         url = '/api/v1/series?match[]={exported_job="summary"}'
         res = self.get(url)
         return res.json()
-    
+
+m = Monitor()
+print m.reload()

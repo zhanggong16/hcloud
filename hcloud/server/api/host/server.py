@@ -5,6 +5,8 @@ from hcloud.exceptions import NotFound
 from .controller import HostsController
 from .views import HostsViews
 
+header = {'Access-Control-Allow-Origin': '*'}
+
 class HostListAPI(Resource):
     '''get host list'''
 
@@ -17,8 +19,8 @@ class HostListAPI(Resource):
             data_res = HostsController.get_list()
         except Exception as e:
             raise ModelsDBError(str(e))
-        return {'data': data_res}
-
+        resp = {'data': data_res, 'message': 'undefine', 'status': 'success'}
+        return resp
 
 class HostAPI(Resource):
     pass
