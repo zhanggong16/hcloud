@@ -1,13 +1,12 @@
-from flask import Flask
+from flask import Flask, g
 from flask import Response
-from flask_restful import Api
 from flask import got_request_exception
+from flask_restful import Api
 from werkzeug.utils import import_string
 from werkzeug.datastructures import Headers
 from hcloud.logger import logging
 
 apis_lst = import_string('hcloud.server.api.router:apis')
-
 blueprints = [
     'hcloud.server.test.views:bp'
 ]
@@ -43,7 +42,7 @@ class CorsResponse(Response):
         headers = kwargs.get('headers')
         
         origin = ('Access-Control-Allow-Origin', '*')
-        methods = ('Access-Control-Allow-Methods', 'HEAD, OPTIONS, GET, POST, DELETE, PUT')
+        methods = ('Access-Control-Allow-Headers', 'Content-Type')
         if headers:
             headers.add(*origin)
             headers.add(*methods)
