@@ -13,5 +13,4 @@ def logger():
     logger = lg.getLogger()
     return logger
 
-
 logging = logger()

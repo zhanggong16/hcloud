@@ -16,5 +16,8 @@ class NotFound(HcloudError):
 class ModelsDBError(HcloudError):
     _error = Error('Failed to obtain data from MySQL', 505)
 
+class MonitorError(HcloudError):
+    _error = Error('Request monitor api error', 501)
+
 class Error(HcloudError):
     _error = Error('Program error', 500)

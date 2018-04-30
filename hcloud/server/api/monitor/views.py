@@ -23,8 +23,6 @@ class HostsViews(object):
     hostlist_data_fields['update_time'] = fields.String(attribute='update_time')
     
     hostlist_fields = {
-        'message': fields.String,
-        'status': fields.String,
         'data': fields.List(fields.Nested(hostlist_data_fields))
     }
 

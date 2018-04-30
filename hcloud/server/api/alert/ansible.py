@@ -2,12 +2,14 @@ import re
 from hcloud.libs import monitor
 from hcloud.logger import logging
 from hcloud.models.alert_rules import AlertRulesData
+from hcloud.config import MONITOR_SERVER_URL
 
 class Check(object):
     @classmethod
     def check_result(cls, output, alert_rules_id):
         msg = ""
         logging.info(output.strip())
+        #logging.info("debug******************1")
         try:
             for x in output.replace('*', '').strip().split("\n"):
                 p1 = re.compile(r'failed=(\d)')
@@ -36,7 +38,6 @@ class Check(object):
                 AlertRulesData.update_status(alert_rules_id, 2)
             else:
                 AlertRulesData.update_status(alert_rules_id, 1)
-                url = 'http://localhost:9090'
-                monitor.reload(url)
+                monitor.reload(MONITOR_SERVER_URL)
         except Exception as e:
             logging.error(e)

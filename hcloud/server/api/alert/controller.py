@@ -1,10 +1,9 @@
 import os
 from hcloud.exceptions import Error
-from hcloud.task.common import push_alert
+from hcloud.task.alert import push_alert
 from hcloud.models.alert_rules import AlertRulesData
+from hcloud.config import YML_LOCATION, RULES_LOCATION
 
-YML_LOCATION = '/tmp/yaml_files/'
-RULES_LOCATION = '/opt/monitor/server/rules/'
 
 class AlertManager(object):
     @classmethod
@@ -163,5 +162,3 @@ class Ansible(object):
         else:
             msg = "Can't found {0}".format(yml_file)
             raise Error(msg)
-
-

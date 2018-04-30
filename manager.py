@@ -10,7 +10,7 @@ def celery_beater():
     from hcloud.libs.celery.celery import celery as celery_app
     from hcloud.config import CELERY_LOGLEVEL, CELERY_LOG_FILE
     celery_beater = beat(app=celery_app)
-    celery_beater.run(loglevel=CELERY_LOGLEVEL)
+    celery_beater.run(loglevel=CELERY_LOGLEVEL, logfile=CELERY_LOG_FILE, hostname='%%h')
 
 
 @click.command()
@@ -20,7 +20,7 @@ def celery_worker(w):
     from hcloud.libs.celery.celery import celery as celery_app
     from hcloud.config import CELERY_LOGLEVEL, CELERY_LOG_FILE
     celery_worker = worker(app=celery_app)
-    celery_worker.run(concurrency=w, loglevel=CELERY_LOGLEVEL, logfile=CELERY_LOG_FILE, hostname='w1@%%h')
+    celery_worker.run(concurrency=w, loglevel=CELERY_LOGLEVEL, logfile=CELERY_LOG_FILE, hostname='%%h')
 
 
 cli.add_command(celery_beater)
@@ -29,4 +29,3 @@ cli.add_command(celery_worker)
 
 if __name__ == '__main__':
     cli()
-

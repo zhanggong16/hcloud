@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restful import Api
+from flask_cors import CORS
 from flask import got_request_exception
 from werkzeug.utils import import_string
 from hcloud.logger import logging
@@ -12,8 +13,9 @@ blueprints = [
 
 def create_app(config=None):
     app = Flask(__name__)
+    CORS(app)
     api = Api(app, catch_all_404s=True)    
-    
+
     #record exception to log
     got_request_exception.connect(log_exception, app)
     

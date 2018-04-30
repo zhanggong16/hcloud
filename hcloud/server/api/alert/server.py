@@ -1,6 +1,5 @@
 import uuid
 from flask_restful import Resource, marshal_with
-from flask_restful import abort
 from flask import request
 from hcloud.server.api.alert.controller import AlertManager
 from hcloud.server.api.alert.controller import Ansible
@@ -8,28 +7,16 @@ from hcloud.exceptions import Error
 from hcloud.exceptions import ModelsDBError
 from .views import AlertRulesViews
 
-
 class SendToAlert(Resource):
-    def post(self):
-        try:
-            json_data = request.get_json(force=True)
-            AlertManager.send(json_data)
-        except Exception as e:
-            abort(501, message=str(e), error="Alert post error")
+    pass
+#    def post(self):
+#        try:
+#            json_data = request.get_json(force=True)
+#            AlertManager.send(json_data)
+#        except Exception as e:
+#            abort(501, message=str(e), error="Alert post error")
 
-
-class AlertRules(Resource):
-
-    alert_rules_data_fields = AlertRulesViews.alert_rules_data_fields
-    alert_rules_parser = AlertRulesViews.parser
-
-    @marshal_with(alert_rules_data_fields)
-    def get(self, alert_rules_id):
-        try:
-            data_res = AlertManager.get_alert_rules(alert_rules_id)
-        except Exception as e:
-            raise ModelsDBError(str(e))
-        return {'data': data_res, 'total': len(data_res)}
+class CreateAlertRules(Resource):
 
     def post(self):
         args = AlertRules.alert_rules_parser.parse_args()
@@ -44,6 +31,7 @@ class AlertRules(Resource):
         try:
             # running
             alert_rules_id = str(uuid.uuid1())
+            # insert mysql
             data_res = AlertManager.create_alert_rules(alert_rules_id, host_id, service, monitor_items,
                                                       statistical_period, statistical_approach, compute_mode,
                                                       threshold_value, 0)
@@ -56,6 +44,18 @@ class AlertRules(Resource):
             raise Error(e)
         return {'status': 'ok'}, 201
 
+class AlertRules(Resource):
+
+    alert_rules_data_fields = AlertRulesViews.alert_rules_data_fields
+    alert_rules_parser = AlertRulesViews.parser
+
+    @marshal_with(alert_rules_data_fields)
+    def get(self, alert_rules_id):
+        try:
+            data_res = AlertManager.get_alert_rules(alert_rules_id)
+        except Exception as e:
+            raise ModelsDBError(str(e))
+        return {'data': data_res, 'total': len(data_res)}
 
     def put(self, alert_rules_id):
         args = AlertRules.alert_rules_parser.parse_args()
