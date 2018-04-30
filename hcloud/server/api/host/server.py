@@ -2,25 +2,26 @@ from flask_restful import Resource
 from flask_restful import marshal_with
 from hcloud.exceptions import ModelsDBError
 from hcloud.exceptions import NotFound
+from hcloud.middleware.auth import auth
 from .controller import HostsController
 from .views import HostsViews
 
-header = {'Access-Control-Allow-Origin': '*'}
 
 class HostListAPI(Resource):
     '''get host list'''
+    decorators = [auth.login_required]
 
-    hostlist_fields = HostsViews.hostlist_fields    
-    hostlist_parser = HostsViews.parser
-
+    hostlist_fields = HostsViews.hostlist_fields
+    
     @marshal_with(hostlist_fields)    
     def get(self):
         try:
             data_res = HostsController.get_list()
         except Exception as e:
             raise ModelsDBError(str(e))
-        resp = {'data': data_res, 'message': 'undefine', 'status': 'success'}
+        resp = {'data': data_res}
         return resp
+
 
 class HostAPI(Resource):
     pass
