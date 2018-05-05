@@ -1,30 +1,73 @@
 import os
+from hcloud.libs.monitor.monitor import m
 from hcloud.exceptions import Error
 from hcloud.task.alert import push_alert
 from hcloud.models.alert_rules import AlertRulesData
+from hcloud.models.alerts import AlertsData
 from hcloud.config import YML_LOCATION, RULES_LOCATION
+from hcloud.config import MONITOR_SERVER_URL
 
 
 class AlertManager(object):
     @classmethod
-    def send(cls, alertinfo):
-        print alertinfo
+    def send_alert(cls, monitor_iterm, summary, description, contact_groups):
+        status = 0
+        return status
+
+    @classmethod
+    def create_alert(cls, *add):
+        alert_rules_id, host_id, port, service, monitor_items, alert_time, current_value, last_time, state, contact_groups, status = add
+        rs = AlertsData.add(alert_rules_id, host_id, port, service, monitor_items, alert_time,
+                                current_value, last_time, state, contact_groups, status)
+        return rs
 
     @classmethod
     def create_alert_rules(cls, *add):
-        alert_rules_id, host_id, service, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value, status = add
-        rs = AlertRulesData.add(alert_rules_id, host_id, service, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value, status)
+        alert_rules_id, host_id, port, service, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value, contact_groups, notify_type, status = add
+        rs = AlertRulesData.add(alert_rules_id, host_id, port, service, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value, contact_groups, notify_type, status)
         return rs
 
     @classmethod
     def update_alert_rules(cls, *update):
-        alert_rules_id, statistical_period, statistical_approach, compute_mode, threshold_value = update
-        rs = AlertRulesData.update(alert_rules_id,statistical_period, statistical_approach, compute_mode, threshold_value)
+        alert_rules_id, statistical_period, compute_mode, threshold_value, contact_groups, notify_type = update
+        rs = AlertRulesData.update(alert_rules_id, statistical_period, compute_mode, threshold_value, contact_groups, notify_type)
         return rs
 
     @classmethod
     def get_alert_rules(cls, alert_rules_id):
         rs = AlertRulesData.get_alert_rules(alert_rules_id)
+        if rs:
+            return rs
+        else:
+            return
+
+    @classmethod
+    def get_alert_rules_dict(cls, alert_rules_id):
+        rs = AlertRulesData.show_alert_rules(alert_rules_id)
+        if rs:
+            return  [ line.dump() for line in rs ]
+        else:
+            return
+
+    @classmethod
+    def get_alert_rules_list(cls):
+        rs = AlertRulesData.get_alert_rules_list()
+        if rs:
+            return [line.dump() for line in rs]
+        else:
+            return
+
+    @classmethod
+    def get_alert_rules_by_name(cls, monitor_items):
+        rs = AlertRulesData.get_alert_rules_by_name(monitor_items)
+        if rs:
+            return rs
+        else:
+            return
+
+    @classmethod
+    def get_alert_history_list(cls):
+        rs = AlertsData.get_alerts_list()
         if rs:
             return [line.dump() for line in rs]
         else:
@@ -80,6 +123,8 @@ class Ansible(object):
         fobj.write("  remote_user: root\n")
         fobj.write("  vars:\n")
         fobj.write("    instance: {0}\n".format(instance))
+        fobj.write("    service: '{0}'\n".format(service))
+        fobj.write("    monitor_items: '{0}'\n".format(metrics))
         fobj.write("    threshold_value: {0}\n".format(threshold_value))
         fobj.write("    statistical_period: '{0}'\n".format(statistical_period))
         fobj.write("    compute_mode: '{0}'\n".format(compute_mode))

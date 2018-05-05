@@ -1,8 +1,7 @@
 import re
-from hcloud.libs import monitor
+from hcloud.libs.monitor.monitor import m
 from hcloud.logger import logging
 from hcloud.models.alert_rules import AlertRulesData
-from hcloud.config import MONITOR_SERVER_URL
 
 class Check(object):
     @classmethod
@@ -35,9 +34,10 @@ class Check(object):
         try:
             if msg != "":
                 logging.error(msg)
-                AlertRulesData.update_status(alert_rules_id, 2)
+                #AlertRulesData.update_status(alert_rules_id, 2)
+                AlertRulesData.delete_alert_rule(alert_rules_id)
             else:
                 AlertRulesData.update_status(alert_rules_id, 1)
-                monitor.reload(MONITOR_SERVER_URL)
+                m.reload()
         except Exception as e:
             logging.error(e)

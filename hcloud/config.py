@@ -9,6 +9,8 @@ from envcfg.json.hcloud import CELERY_LOG_FILE
 from envcfg.json.hcloud import YML_LOCATION
 from envcfg.json.hcloud import RULES_LOCATION
 from envcfg.json.hcloud import MONITOR_SERVER_URL
+from envcfg.json.hcloud import ALERT_MANAGER_PATH
+from envcfg.json.hcloud import ALERT_MANAGER_URL
 
 APP = 'hcloud'
 
@@ -23,5 +25,7 @@ __all__ = [
     'CELERY_LOG_FILE',
     'YML_LOCATION',
     'RULES_LOCATION',
-    'MONITOR_SERVER_URL'
+    'MONITOR_SERVER_URL',
+    'ALERT_MANAGER_PATH',
+    'ALERT_MANAGER_URL'
 ]

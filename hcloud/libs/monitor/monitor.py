@@ -34,4 +34,3 @@ class Monitor(object):
         return res.json()
 
 m = Monitor()
-print m.reload()
