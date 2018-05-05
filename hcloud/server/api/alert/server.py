@@ -158,44 +158,17 @@ class AlertRules(Resource):
                 silence_time = action['param']['silence_time']
                 silence_time_hour = str(silence_time) + 'h'
                 data_res = AlertManager.get_alert_rules(alert_rules_id)
-                alert_name = data_res['service'] + '_' + data_res['monitor_items'] + '_' + data_res[
-                    'host_id'] + ':' + str(data_res['port'])
+                alert_name = data_res['service'] + '_' + data_res['monitor_items'] + '_' + data_res['host_id'] + ':' + str(data_res['port'])
 
-                silence_add = "{0}/amtool --alertmanager.url={1} silence add alertname={2} --expires={3}".format(
-                    ALERT_MANAGER_PATH, ALERT_MANAGER_URL, alert_name, silence_time_hour)
-                status, output, err = execute_command(silence_add)
-                if status != 0 or output == None:
-                    errmsg = "Execute silence add command error: %s" % err
-                    raise Error(str(errmsg))
+                AlertManager.disable_alert(alert_name, silence_time_hour)
 
                 AlertRulesData.update_silence_time(alert_rules_id, int(silence_time))
             except Exception as e:
                 raise Error(str(e))
         elif action['method'] == 'enable':
             data_res = AlertManager.get_alert_rules(alert_rules_id)
-            alert_name = data_res['service'] + '_' + data_res['monitor_items'] + '_' + data_res['host_id'] + ':' + str(
-                data_res['port'])
-            silence_query = "{0}/amtool --alertmanager.url={1} silence query alertname={2}".format(ALERT_MANAGER_PATH,
-                                                                                                   ALERT_MANAGER_URL,
-                                                                                                   alert_name)
-            status, output, err = execute_command(silence_query)
-            if status != 0 or output == None:
-                errmsg = "Execute silence query command error: %s" % err
-                raise Error(str(errmsg))
-            for line in output.split("\n"):
-                if line == None or line == "":
-                    continue
-                if not line.find('Matchers') == -1 or not line.find('Comment') == -1:
-                    continue
-                else:
-                    id = line.split(' ')[0]
-
-                silence_expire = "{0}/amtool --alertmanager.url={1} silence expire {2}".format(ALERT_MANAGER_PATH,
-                                                                                               ALERT_MANAGER_URL, id)
-                status, output, err = execute_command(silence_expire)
-                if status != 0 or output == None:
-                    errmsg = "Execute silence expire command error: %s" % err
-                    raise Error(str(errmsg))
+            alert_name = data_res['service'] + '_' + data_res['monitor_items'] + '_' + data_res['host_id'] + ':' + str(data_res['port'])
+            AlertManager.enable_alert(alert_name)
 
             AlertRulesData.update_silence_time(alert_rules_id, 0)
         return {'status': 'ok'}, 201
@@ -205,9 +178,8 @@ class AlertRules(Resource):
             data_res = AlertManager.get_alert_rules(alert_rules_id)
             file_name = data_res['host_id'] + '_' + str(data_res['port']) + '_' + data_res['service'] + '_' + data_res[
                 'monitor_items'] + '.yml'
-            file_path = RULES_LOCATION + file_name
-            os.remove(file_path)
-            m.reload()
+
+            AlertManager.delete_alert_rules(file_name)
 
             AlertRulesData.delete_alert_rule(alert_rules_id)
         except Exception as e:

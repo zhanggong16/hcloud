@@ -5,6 +5,9 @@ from hcloud.task.alert import push_alert
 from hcloud.models.alert_rules import AlertRulesData
 from hcloud.models.alerts import AlertsData
 from hcloud.config import YML_LOCATION, RULES_LOCATION
+from envcfg.json.hcloud import ALERT_MANAGER_PATH
+from envcfg.json.hcloud import ALERT_MANAGER_URL
+from hcloud.utils import execute_command
 from hcloud.config import MONITOR_SERVER_URL
 
 
@@ -72,6 +75,47 @@ class AlertManager(object):
             return [line.dump() for line in rs]
         else:
             return
+
+    @classmethod
+    def delete_alert_rules(cls, file_name):
+        file_path = RULES_LOCATION + file_name
+        os.remove(file_path)
+        m.reload()
+
+    @classmethod
+    def disable_alert(cls, alert_name, silence_time_hour):
+
+        silence_add = "{0}/amtool --alertmanager.url={1} silence add alertname={2} --expires={3}".format(
+            ALERT_MANAGER_PATH, ALERT_MANAGER_URL, alert_name, silence_time_hour)
+
+        status, output, err = execute_command(silence_add)
+        if status != 0 or output == None:
+            errmsg = "Execute silence add command error: %s" % err
+            raise Error(str(errmsg))
+
+    @classmethod
+    def enable_alert(cls, alert_name):
+        silence_query = "{0}/amtool --alertmanager.url={1} silence query alertname={2}".format(ALERT_MANAGER_PATH,
+                                                                                               ALERT_MANAGER_URL,
+                                                                                               alert_name)
+        status, output, err = execute_command(silence_query)
+        if status != 0 or output == None:
+            errmsg = "Execute silence query command error: %s" % err
+            raise Error(str(errmsg))
+        for line in output.split("\n"):
+            if line == None or line == "":
+                continue
+            if not line.find('Matchers') == -1 or not line.find('Comment') == -1:
+                continue
+            else:
+                id = line.split(' ')[0]
+
+            silence_expire = "{0}/amtool --alertmanager.url={1} silence expire {2}".format(ALERT_MANAGER_PATH,
+                                                                                           ALERT_MANAGER_URL, id)
+            status, output, err = execute_command(silence_expire)
+            if status != 0 or output == None:
+                errmsg = "Execute silence expire command error: %s" % err
+                raise Error(str(errmsg))
 
 class Ansible(object):
     @classmethod
