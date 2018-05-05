@@ -136,6 +136,19 @@ class AlertRules(Resource):
             contact_groups = action['param']['contact_groups']
             notify_type = action['param']['notify_type']
             try:
+                data_res = AlertManager.get_alert_rules(alert_rules_id)
+                host_id = data_res['host_id']
+                port = data_res['port']
+                service = data_res['service']
+                monitor_items = data_res['monitor_items']
+
+                Ansible.check(host_id)
+                inv_file = Ansible.init_target_yaml(host_id)
+                instance = host_id + ":" + str(port)
+                yml_file = Ansible.init_metrics_yaml(service, monitor_items, host_id, instance, threshold_value,
+                                                     statistical_period, compute_mode)
+                Ansible.execute(yml_file, inv_file, alert_rules_id)
+
                 data_res = AlertManager.update_alert_rules(alert_rules_id, statistical_period, compute_mode,
                                                            threshold_value, contact_groups, notify_type)
             except Exception as e:
