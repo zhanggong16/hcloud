@@ -1,7 +1,7 @@
 groups:
 - name: Memory_Usage_Rule
   rules:
-  - alert:{{ service }}_{{ monitor_items }_{{ instance }}
+  - alert: {{ service }}_{{ monitor_items }}_{{ instance }}
     expr: (node_memory_MemTotal{exported_instance="{{ instance }}"} - (node_memory_MemFree{exported_instance="{{ instance }}"}+node_memory_Buffers{exported_instance="{{ instance }}"}+node_memory_Cached{exported_instance="{{ instance }}"} )) / node_memory_MemTotal{exported_instance="{{ instance }}"} * 100 {{ compute_mode }} {{ threshold_value }}
     for: {{ statistical_period}}
     labels:
