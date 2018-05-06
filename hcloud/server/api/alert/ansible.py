@@ -8,7 +8,6 @@ class Check(object):
     def check_result(cls, output, alert_rules_id):
         msg = ""
         logging.info(output.strip())
-        #logging.info("debug******************1")
         try:
             for x in output.replace('*', '').strip().split("\n"):
                 p1 = re.compile(r'failed=(\d)')

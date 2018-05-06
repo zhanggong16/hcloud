@@ -12,7 +12,7 @@ from .views import AlertHistoryViews
 from envcfg.json.hcloud import ALERT_MANAGER_PATH
 from envcfg.json.hcloud import ALERT_MANAGER_URL
 from envcfg.json.hcloud import RULES_LOCATION
-from hcloud.config import MONITOR_SERVER_URL
+from hcloud.config import MONITOR_SERVER
 from hcloud.utils import execute_command
 from hcloud.models.alert_rules import AlertRulesData
 import json
@@ -91,8 +91,8 @@ class CreateAlertRules(Resource):
             data_res = AlertManager.create_alert_rules(alert_rules_id, host_id, port, service, monitor_items,
                                                        statistical_period, statistical_approach, compute_mode,
                                                        threshold_value, contact_groups, notify_type, 0)
-            Ansible.check(host_id)
-            inv_file = Ansible.init_target_yaml(host_id)
+            Ansible.check(MONITOR_SERVER)
+            inv_file = Ansible.init_target_yaml(MONITOR_SERVER)
             instance = host_id + ":" + str(port)
             yml_file = Ansible.init_metrics_yaml(service, monitor_items, host_id, instance, threshold_value,
                                                  statistical_period, compute_mode)
@@ -142,8 +142,8 @@ class AlertRules(Resource):
                 service = data_res['service']
                 monitor_items = data_res['monitor_items']
 
-                Ansible.check(host_id)
-                inv_file = Ansible.init_target_yaml(host_id)
+                Ansible.check(MONITOR_SERVER)
+                inv_file = Ansible.init_target_yaml(MONITOR_SERVER)
                 instance = host_id + ":" + str(port)
                 yml_file = Ansible.init_metrics_yaml(service, monitor_items, host_id, instance, threshold_value,
                                                      statistical_period, compute_mode)

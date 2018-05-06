@@ -4,10 +4,11 @@ from hcloud.exceptions import Error
 from hcloud.task.alert import push_alert
 from hcloud.models.alert_rules import AlertRulesData
 from hcloud.models.alerts import AlertsData
-from hcloud.config import YML_LOCATION, RULES_LOCATION
+from hcloud.config import YML_LOCATION, RULES_LOCATION, RULES_FILE
 from envcfg.json.hcloud import ALERT_MANAGER_PATH
 from envcfg.json.hcloud import ALERT_MANAGER_URL
 from hcloud.utils import execute_command
+from hcloud.utils import write_to_file
 from hcloud.config import MONITOR_SERVER_URL
 
 
@@ -132,20 +133,69 @@ class Ansible(object):
         if not os.path.exists(YML_LOCATION):
             os.makedirs(YML_LOCATION, 0755)
 
-    @classmethod
-    def init_target_yaml(cls, host_ip):
-        file_name = host_ip + ".inv"
-        inv_file = YML_LOCATION + file_name
-        fobj = None
-        try:
-            fobj = open(inv_file, 'w')
-        except Exception, e:
-            msg = "Can't open file {0}: {1}".format(inv_file, e)
-            raise Error(msg)
+    # @classmethod
+    # def init_target_yaml(cls, host_ip):
+    #     file_name = host_ip + ".inv"
+    #     inv_file = YML_LOCATION + file_name
+    #     fobj = None
+    #     try:
+    #         fobj = open(inv_file, 'w')
+    #     except Exception, e:
+    #         msg = "Can't open file {0}: {1}".format(inv_file, e)
+    #         raise Error(msg)
+    #
+    #     fobj.write("[target_host]\n")
+    #     fobj.write(host_ip + "\n")
+    #     fobj.close()
+    #     return inv_file
 
-        fobj.write("[target_host]\n")
-        fobj.write(host_ip + "\n")
-        fobj.close()
+    # @classmethod
+    # def init_metrics_yaml(cls, service, metrics, host_ip, instance, threshold_value, statistical_period, compute_mode):
+    #
+    #     file_name = host_ip + ".yml"
+    #     yml_file = YML_LOCATION + file_name
+    #
+    #     fobj = None
+    #     try:
+    #         fobj = open(yml_file, 'w')
+    #     except Exception, e:
+    #         msg = "Can't open file {0}: {1}".format(yml_file, e)
+    #         raise Error(msg)
+    #
+    #     fobj.write("---\n")
+    #     fobj.write("- name: install target_host\n")
+    #     fobj.write("  hosts: target_host\n")
+    #     fobj.write("  remote_user: root\n")
+    #     fobj.write("  vars:\n")
+    #     fobj.write("    instance: {0}\n".format(instance))
+    #     fobj.write("    service: '{0}'\n".format(service))
+    #     fobj.write("    monitor_items: '{0}'\n".format(metrics))
+    #     fobj.write("    threshold_value: {0}\n".format(threshold_value))
+    #     fobj.write("    statistical_period: '{0}'\n".format(statistical_period))
+    #     fobj.write("    compute_mode: '{0}'\n".format(compute_mode))
+    #     fobj.write("  tasks:\n")
+    #     yml_rules_path = os.path.abspath("hcloud/server/api/alert/files/")
+    #     yml_rules_rec = service + "_" + metrics + ".yml"
+    #     dest_file = RULES_LOCATION + instance.replace(":", "_") + "_" + yml_rules_rec
+    #     fobj.write \
+    #         ("    - template: src=" + yml_rules_path + "/" + yml_rules_rec + " dest={0} mode=640 force=yes\n".format
+    #         (dest_file))
+    #
+    #     fobj.close()
+    #     return yml_file
+
+    @classmethod
+    def init_target_yaml(cls, target_host):
+        file_name = target_host + ".inv"
+        inv_file = YML_LOCATION + file_name
+
+        target_yml = """
+[target_host]
+{0}
+
+""".format(target_host)
+        write_to_file(inv_file, target_yml)
+
         return inv_file
 
     @classmethod
@@ -154,33 +204,36 @@ class Ansible(object):
         file_name = host_ip + ".yml"
         yml_file = YML_LOCATION + file_name
 
-        fobj = None
-        try:
-            fobj = open(yml_file, 'w')
-        except Exception, e:
-            msg = "Can't open file {0}: {1}".format(yml_file, e)
-            raise Error(msg)
-
-        fobj.write("---\n")
-        fobj.write("- name: install target_host\n")
-        fobj.write("  hosts: target_host\n")
-        fobj.write("  remote_user: root\n")
-        fobj.write("  vars:\n")
-        fobj.write("    instance: {0}\n".format(instance))
-        fobj.write("    service: '{0}'\n".format(service))
-        fobj.write("    monitor_items: '{0}'\n".format(metrics))
-        fobj.write("    threshold_value: {0}\n".format(threshold_value))
-        fobj.write("    statistical_period: '{0}'\n".format(statistical_period))
-        fobj.write("    compute_mode: '{0}'\n".format(compute_mode))
-        fobj.write("  tasks:\n")
-        yml_rules_path = os.path.abspath("hcloud/server/api/alert/files/")
         yml_rules_rec = service + "_" + metrics + ".yml"
         dest_file = RULES_LOCATION + instance.replace(":", "_") + "_" + yml_rules_rec
-        fobj.write \
-            ("    - template: src=" + yml_rules_path + "/" + yml_rules_rec + " dest={0} mode=640 force=yes\n".format
-            (dest_file))
+        src_file = RULES_FILE + "/" + yml_rules_rec
+        config_args_list = {"instance": instance,
+                            "service": service,
+                            "metrics": metrics,
+                            "threshold_value": threshold_value,
+                            "statistical_period": statistical_period,
+                            "compute_mode": compute_mode,
+                            "dest_file": dest_file,
+                            "src_file": src_file
+                            }
 
-        fobj.close()
+        metrics_yml = """
+---
+- name: install target_host
+  hosts: target_host
+  remote_user: root
+  vars:
+    instance: "%(instance)s"
+    service: "%(service)s"
+    monitor_items: "%(metrics)s"
+    threshold_value: %(threshold_value)d
+    statistical_period: "%(statistical_period)s"
+    compute_mode: "%(compute_mode)s"
+  tasks:
+      - template: src=%(src_file)s dest=%(dest_file)s mode=640 force=yes"""%config_args_list
+
+        write_to_file(yml_file, metrics_yml)
+
         return yml_file
 
     # @celery.task

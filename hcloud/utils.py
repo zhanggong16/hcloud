@@ -1,5 +1,6 @@
 import os
 from eventlet.green import subprocess
+from hcloud.exceptions import Error
 import shlex
 
 def cmd_run(cmd):
@@ -23,3 +24,11 @@ def execute_command(cmdstring, cwd=None, preexec_fn=None, env=None, shell=False)
     sub = subprocess.Popen(cmdstring_list, cwd=cwd, preexec_fn=preexec_fn, env=env, stdin=subprocess.PIPE,stdout=subprocess.PIPE, shell=shell, bufsize=4096)
     output, err = sub.communicate()
     return int(sub.returncode), output, err
+
+def write_to_file(file, str_config):
+    try:
+        with open(file, "w") as fobj:
+            fobj.write(str_config)
+    except Exception,err:
+        errmsg = "Write to file error: %s" % err
+        raise Error(str(errmsg))
