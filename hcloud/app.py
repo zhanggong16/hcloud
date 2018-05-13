@@ -1,4 +1,4 @@
-from flask import Flask, g
+from flask import Flask
 from flask import Response
 from flask import got_request_exception
 from flask_restful import Api

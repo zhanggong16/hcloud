@@ -1,20 +1,39 @@
 from flask_restful import Resource
 from flask_restful import marshal_with
-from hcloud.exceptions import NotFound
-#from .controller import HostsController
+from flask import g
+from hcloud.middleware.auth import auth
+from hcloud.exceptions import (
+    NotFound,
+    ModelsDBError,
+    MonitorError
+)
+from .controller import MonitorController
 #from .views import HostsViews
 
+
 class MonitorAPI(Resource):
-    '''get host list'''
+    #decorators = [auth.login_required]
 
     #hostlist_fields = HostsViews.hostlist_fields    
     #hostlist_parser = HostsViews.parser
 
     #@marshal_with(hostlist_fields)    
-    def get(self):
+    def get(self, category, host_key):
+        _abort_if_host_id_doesnt_exist_hostspool(host_key)
         try:
-            data_res = '123'
+            item_list = MonitorController.get_monitor_item(category)
         except Exception as e:
             raise ModelsDBError(str(e))
+        try:
+            data_res = MonitorController.monitor_title(item_list, category, host_key, '123')       
+        except Exception as e:
+            raise MonitorError(str(e))
         return {'data': data_res}
 
+class MonitorDetailAPI(Resource):
+    pass
+
+def _abort_if_host_id_doesnt_exist_hostspool(host_key):
+    res = MonitorController.get_id_from_hostspool(host_key)
+    if not res:
+        raise NotFound("Host %s not exist" % host_key)

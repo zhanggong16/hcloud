@@ -1,10 +1,10 @@
-from hcloud.models.hosts import HostData
+from hcloud.models.hosts import HostsData
 
 class HostsController(object):
 
     @classmethod
     def get_list(cls):
-        rs = HostData.getlist()
+        rs = HostsData.getlist()
         if rs:
             return [ line.dump() for line in rs ]
         else:

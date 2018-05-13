@@ -33,9 +33,10 @@ libs_dir = "%s/libs"
 support_kind_list = [
     'gateway',
     'node',
-    'mysql',
-    'summary'
+    'mysql'
 ]
+
+summary_dict = {"kind": "summary", "interval": 15, "port": 9191}
 
 def logger():
     format = '%(asctime)s [%(filename)s][%(levelname)s] %(message)s'
@@ -90,11 +91,12 @@ def _get_config(config_file):
                 gateway_dict = opt_dict
             else:
                 config_lst.append(opt_dict)
+        config_lst.append(summary_dict)
         return gateway_dict, config_lst
     else:
         raise CollectException("Config file %s not found." % config_file)
 
-def _collect_data(kind_dict, gateway_dict):
+def _collect_data(kind_dict, gateway_dict, kind_list):
     
     def _node(curl, ip_addr, node_port, gateway_host, gateway_port):
         ''' push node metrics '''
@@ -103,7 +105,7 @@ def _collect_data(kind_dict, gateway_dict):
             'http://{gateway_host}:{gateway_port}/metrics/job/{job_name}/instance/{local_ip}:{port}').format(curl=curl, local_ip=ip_addr, port=node_port, gateway_host=gateway_host, gateway_port=gateway_port, job_name=job_name)
         return _cmd_run(cmd)
 
-    def _summary(curl, ip_addr, summary_port, gateway_host, gateway_port):
+    def _summary(curl, ip_addr, summary_port, gateway_host, gateway_port, kind_list):
         ''' push summary metrics '''
         item_lst = ['cpu_process_num', 'cpu_physical_num', 'memory_total', 'disk_usage']
         job_name = 'summary'
@@ -117,7 +119,7 @@ def _collect_data(kind_dict, gateway_dict):
         for item in item_lst:
             if item == 'disk_usage':
                 for p in psutil.disk_partitions():
-                    device = p.device.split('/')[-1]
+                    device = "disk_%s" % p.device.split('/')[-1]
                     mountpoint = p.mountpoint
                     res = psutil.disk_usage(mountpoint).total
                     cmd_res = cmd_middle_template.format(item=device, value=res)
@@ -132,8 +134,16 @@ def _collect_data(kind_dict, gateway_dict):
                     res = mem.total
                 cmd_res = cmd_middle_template.format(item=item, value=res)
                 cmd_middle += cmd_res
+        for one in kind_list:
+            item = "%s_%s" % (one['kind'], "interval")
+            res = one['interval']
+            cmd_res = cmd_middle_template.format(item=item, value=res)
+            cmd_middle += cmd_res
+            item = "%s_%s" % (one['kind'], "port")
+            res = one['port']
+            cmd_res = cmd_middle_template.format(item=item, value=res)
+            cmd_middle += cmd_res
         cmd_total = cmd_head + cmd_middle + cmd_foot
-        logging.error(cmd_total)
         return _cmd_run(cmd_total)
     
     ###
@@ -155,7 +165,7 @@ def _collect_data(kind_dict, gateway_dict):
         elif kind_dict['kind'] == 'summary':
             interval, summary_port = kind_dict['interval'], kind_dict['port']
             try:
-                code, res = _summary(curl, ip_addr, summary_port, gateway_host, gateway_port)
+                code, res = _summary(curl, ip_addr, summary_port, gateway_host, gateway_port, kind_list)
                 if code == 0:
                     logging.info("Summary data collection success.")
                 else:
@@ -271,11 +281,11 @@ class CollectDaemon(Daemon):
         gateway_dict, kind_list = _get_config(config_file)
         logging.info("Gateway items: %s" % gateway_dict)
         logging.info("Monitor items: %s" % kind_list)
-
+        
         threads = []
         for i in range(len(kind_list)):
             kind = kind_list[i]
-            t = threading.Thread(target=_collect_data, args=(kind, gateway_dict))
+            t = threading.Thread(target=_collect_data, args=(kind, gateway_dict, kind_list))
             threads.append(t)
         for i in range(len(kind_list)):
             threads[i].start()

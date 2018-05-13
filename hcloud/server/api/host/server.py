@@ -9,7 +9,7 @@ from .views import HostsViews
 
 class HostListAPI(Resource):
     '''get host list'''
-    decorators = [auth.login_required]
+    #decorators = [auth.login_required]
 
     hostlist_fields = HostsViews.hostlist_fields
     

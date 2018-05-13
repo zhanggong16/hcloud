@@ -1,6 +1,6 @@
 from hcloud.libs.db.mysql import db
 
-class HostData(object):
+class HostsData(object):
     _table_hp = 'hosts_pool'
 
     def __init__(
@@ -59,6 +59,14 @@ class HostData(object):
         return [ cls(*line) for line in rs ] if rs else []
 
     @classmethod
+    def get_privateip_by_host_key(cls, host_key):
+        sql = ("select privateip from {table} where host_key=:host_key").format(table=cls._table_hp)
+        params = dict(host_key=host_key)
+        rs = db.execute(sql, params=params).fetchone()
+        db.commit()
+        return rs[0] if rs else ''
+
+    @classmethod
     def add_hostpool(cls, host_id, name, description, device_key, privateip, os_type, state, attribute, region, remark, dns, project_id):
         sql = ("insert into {table} "
                "(host_id, name, description, device_key, privateip, os_type, state, attribute, region, dns, project_id, remark) values "
@@ -84,9 +92,9 @@ class HostData(object):
         db.rollback()
 
     @classmethod
-    def get_hostpool_by_host_id(cls, host_id):
-        sql = ("select id from {table} where host_id=:host_id").format(table=cls._table_hp)
-        params = dict(host_id=host_id)
+    def get_hostspool_by_host_key(cls, host_key):
+        sql = ("select id from {table} where host_key=:host_key").format(table=cls._table_hp)
+        params = dict(host_key=host_key)
         rs = db.execute(sql, params=params).fetchone()
         db.commit()
         return rs[0] if rs else ''

@@ -11,8 +11,8 @@ version = 'v1'
 
 apis = [
         [HostListAPI, '/api/{vsersion}/hostlist'.format(vsersion=version)],
-        [HostAPI, '/api/{vsersion}/host/<host_id>'.format(vsersion=version)],
-        [MonitorAPI, '/api/{vsersion}/monitor/host'.format(vsersion=version)],
+        #[HostAPI, '/api/{vsersion}/host/<host_id>'.format(vsersion=version)],
+        [MonitorAPI, '/api/{vsersion}/monitor/data/<string:category>/<string:host_key>'.format(vsersion=version)],
         [Alert, '/api/{vsersion}/alert'.format(vsersion=version)],
         [CreateAlertRules, '/api/{vsersion}/alert_rules'.format(vsersion=version)],
         [AlertRules, '/api/{vsersion}/alert_rules/<alert_rules_id>'.format(vsersion=version)],

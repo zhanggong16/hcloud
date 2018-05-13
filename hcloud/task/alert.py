@@ -10,6 +10,3 @@ def push_alert(cmd, alert_rules_id):
     except Exception as e:
         return {'status': -1, 'result': str(e)}
     return {'status': status, 'result': res[0]}
-
-def _xxxxx():
-    pass

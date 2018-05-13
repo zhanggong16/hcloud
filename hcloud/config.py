@@ -11,6 +11,10 @@ from envcfg.json.hcloud import CELERY_LOG_FILE
 
 APP = 'hcloud'
 
+# monitor summary agent port
+SUMMARY_AGENT_PORT = 9191
+NODE_AGENT_PORT = 9100
+
 __all__ = [
     'HTTP_PORT',
     'DEBUG',
@@ -19,9 +23,15 @@ __all__ = [
     'CELERY_RESULT_BACKEND',
     'CELERY_BROKER_URL',
     'CELERY_LOGLEVEL',
-    'CELERY_LOG_FILE'
+    'CELERY_LOG_FILE',
+    'SUMMARY_AGENT_PORT',
+    'NODE_AGENT_PORT'
 ]
 
+
+
+
+### user_id
 YML_LOCATION = '/tmp/yaml_files/'
 RULES_LOCATION = '/opt/monitor/server/rules/'
 MONITOR_SERVER = '192.168.0.92'

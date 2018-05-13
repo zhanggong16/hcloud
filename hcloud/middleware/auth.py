@@ -1,4 +1,6 @@
 from flask import g
+from flask import make_response
+from flask import jsonify
 from flask_httpauth import HTTPTokenAuth
 
 auth = HTTPTokenAuth(scheme='Hcloud')
@@ -15,3 +17,7 @@ def verify_token(token):
         g.user = tokens[token]
         return True
     return False
+
+@auth.error_handler
+def unauthorized():
+    return make_response(jsonify({'message': 'Unauthorized access'}), 401)

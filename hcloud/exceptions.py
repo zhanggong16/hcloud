@@ -11,7 +11,6 @@ class HcloudError(HTTPException):
         self.description = message or self._error.message
         self.code = self._error.http_status_code
 
-
 class NotFound(HcloudError):
     _error = Error('Resource not found', 404)
 
@@ -23,3 +22,4 @@ class MonitorError(HcloudError):
 
 class Error(HcloudError):
     _error = Error('Program error', 500)
+
