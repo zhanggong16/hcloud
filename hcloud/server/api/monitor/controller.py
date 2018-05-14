@@ -24,6 +24,7 @@ class MonitorController(object):
 
     @classmethod
     def monitor_title(cls, item_list, category, host_key, user_id):
+        include_list = ['tmpfs', 'rootfs', 'lo']
         m = Monitor(user_id)
         privateip = HostsData.get_privateip_by_host_key(host_key)
         summary_exported_instance = '%s:%s' % (privateip, SUMMARY_AGENT_PORT)
@@ -47,7 +48,6 @@ class MonitorController(object):
         exported_instance = '%s:%s' % (privateip, port)
         # get item title
         item_title_list = []
-        include_list = ['tmpfs', 'rootfs', 'lo']
         for item in item_list:
             query_metric = item.get('query')
             data = m.last_data_by_exported_instance(query_metric, exported_instance)
@@ -82,4 +82,4 @@ class MonitorController(object):
                     'status': 'failed',
                 }
                 item_title_list.append(item_title_dict)
-        return item_title_list   
+        return item_title_list

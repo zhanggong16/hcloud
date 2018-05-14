@@ -8,16 +8,16 @@ from hcloud.exceptions import (
     MonitorError
 )
 from .controller import MonitorController
-#from .views import HostsViews
+from .views import MonitorViews
 
 
 class MonitorAPI(Resource):
     #decorators = [auth.login_required]
 
-    #hostlist_fields = HostsViews.hostlist_fields    
+    monitor_item_title_fields = MonitorViews.monitor_item_title_fields
     #hostlist_parser = HostsViews.parser
 
-    #@marshal_with(hostlist_fields)    
+    @marshal_with(monitor_item_title_fields)    
     def get(self, category, host_key):
         _abort_if_host_id_doesnt_exist_hostspool(host_key)
         try:
