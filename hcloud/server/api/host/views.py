@@ -5,7 +5,7 @@ class HostsViews(object):
 
     #return host list
     hostlist_data_fields = {}
-    hostlist_data_fields['host_key'] = fields.String(attribute='host_key')
+    hostlist_data_fields['key'] = fields.String(attribute='key')
     hostlist_data_fields['user_id'] = fields.String(attribute='user_id')
     hostlist_data_fields['description'] = fields.String(attribute='description')
     hostlist_data_fields['name'] = fields.String(attribute='name')
@@ -27,5 +27,3 @@ class HostsViews(object):
         'status': fields.String(default='success'),
         'data': fields.List(fields.Nested(hostlist_data_fields))
     }
-
-    

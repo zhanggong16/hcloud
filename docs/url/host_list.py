@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import requests
 
-hostlist = 'http://localhost:5000/api/v1/hostlist'
+hostlist = 'http://localhost:5000/api/v1/node/list'
 
 #headers = {'Authorization': 'Hcloud secret-token-1'}
 headers = {}

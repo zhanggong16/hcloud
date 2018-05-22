@@ -29,7 +29,7 @@ class HostsData(object):
     def dump(self):
         req = dict(
             id = self.id_,
-            host_key = self.host_key,
+            key = self.host_key,
             user_id = self.user_id,
             name = self.name,
             description = self.description,

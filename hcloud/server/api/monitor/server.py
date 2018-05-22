@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from flask_restful import marshal_with
-from flask import g
+from flask import g, request
 from hcloud.middleware.auth import auth
 from hcloud.exceptions import (
     NotFound,
@@ -15,25 +15,50 @@ class MonitorAPI(Resource):
     #decorators = [auth.login_required]
 
     monitor_item_title_fields = MonitorViews.monitor_item_title_fields
-    #hostlist_parser = HostsViews.parser
 
     @marshal_with(monitor_item_title_fields)    
-    def get(self, category, host_key):
-        _abort_if_host_id_doesnt_exist_hostspool(host_key)
+    def get(self, category, key):
+        _abort_if_host_id_doesnt_exist_hostspool(key)
         try:
             item_list = MonitorController.get_monitor_item(category)
         except Exception as e:
             raise ModelsDBError(str(e))
         try:
-            data_res = MonitorController.monitor_title(item_list, category, host_key, '123')       
+            data_res = MonitorController.monitor_title(item_list, category, key, '123')       
         except Exception as e:
             raise MonitorError(str(e))
-        return {'data': data_res}
+        if data_res:
+            status = 'success'
+        else:
+            status = 'failed'
+        return {'data': data_res, 'status': status}
 
 class MonitorDetailAPI(Resource):
-    pass
+    #decorators = [auth.login_required]
 
-def _abort_if_host_id_doesnt_exist_hostspool(host_key):
-    res = MonitorController.get_id_from_hostspool(host_key)
+    #monitor_parser = MonitorViews.parser
+
+    def get(self, category, key):
+        para_dict = {
+            'start': request.args['start'],
+            'end': request.args['end'],
+            'query': request.args['query'],
+            'interval': request.args['interval'],
+            'name': request.args['name'],
+            'category': category
+            }   
+        print para_dict['query']
+        try:
+            data_res = MonitorController.monitor_data(para_dict, '123')
+        except Exception as e:
+            raise MonitorError(str(e))
+        if data_res:
+            status = 'success'
+        else:
+            status = 'failed'
+        return {'data': data_res, 'status': status}
+
+def _abort_if_host_id_doesnt_exist_hostspool(key):
+    res = MonitorController.get_id_from_hostspool(key)
     if not res:
-        raise NotFound("Host %s not exist" % host_key)
+        raise NotFound("Host %s not exist" % key)

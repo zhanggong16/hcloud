@@ -14,14 +14,16 @@ class HostListAPI(Resource):
     hostlist_fields = HostsViews.hostlist_fields
     
     @marshal_with(hostlist_fields)    
-    def get(self):
+    def get(self, category):
         try:
-            data_res = HostsController.get_list()
+            if category == 'node':
+                data_res = HostsController.get_list()
+            else:
+                data_res = HostsController.get_list()
         except Exception as e:
             raise ModelsDBError(str(e))
         resp = {'data': data_res}
         return resp
-
 
 class HostAPI(Resource):
     pass

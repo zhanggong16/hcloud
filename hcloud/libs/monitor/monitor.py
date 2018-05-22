@@ -45,4 +45,13 @@ class Monitor(object):
         res = self._get(url)
         return res.json()
 
+    def query_range(self, query, start_time, end_time, step):
+        '''
+            http://114.67.76.75:9090/api/v1/query_range?query=rate(process_cpu_seconds_total{exported_instance=%22192.168.0.92:9100%22}[60s])*100&start=2018-05-15T19:10:30.781Z&end=2018-05-15T20:11:00.781Z&step=15s&start=2018-05-15T19:10:30.781Z&end=2018-05-15T20:11:00.781Z&step=15s
+        '''        
+        url = '/api/v1/query_range?query=%s&start=%s&end=%s&step=%ss' % (query, start_time, end_time, step)
+        print url
+        res = self._get(url)
+        return res.json()        
+
 m = Monitor()
