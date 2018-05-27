@@ -18,6 +18,6 @@ apis = [
                         '<string:category>/<string:key>'.format(vsersion=version)],
         [Alert, '/api/{vsersion}/alert'.format(vsersion=version)],
         [CreateAlertRules, '/api/{vsersion}/alert_rules'.format(vsersion=version)],
-        [AlertRules, '/api/{vsersion}/alert_rules/<alert_rules_id>'.format(vsersion=version)],
+        [AlertRules, '/api/{vsersion}/alert_rules/service/<service_name>'.format(vsersion=version)],
         [AlertRulesList, '/api/{vsersion}/alert_rules_list'.format(vsersion=version)]
 ]

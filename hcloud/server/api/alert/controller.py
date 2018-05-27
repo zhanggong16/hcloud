@@ -27,14 +27,14 @@ class AlertManager(object):
 
     @classmethod
     def create_alert_rules(cls, *add):
-        alert_rules_id, host_id, port, service, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value, contact_groups, notify_type, status = add
-        rs = AlertRulesData.add(alert_rules_id, host_id, port, service, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value, contact_groups, notify_type, status)
+        alert_rules_id, host_id, port, service, temp_name, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value, contact_groups, notify_type, status = add
+        rs = AlertRulesData.add(alert_rules_id, host_id, port, service, temp_name, monitor_items, statistical_period, statistical_approach, compute_mode, threshold_value, contact_groups, notify_type, status)
         return rs
 
     @classmethod
     def update_alert_rules(cls, *update):
-        alert_rules_id, statistical_period, compute_mode, threshold_value, contact_groups, notify_type = update
-        rs = AlertRulesData.update(alert_rules_id, statistical_period, compute_mode, threshold_value, contact_groups, notify_type)
+        alert_rules_id, statistical_period, compute_mode, threshold_value, contact_groups, notify_type, status = update
+        rs = AlertRulesData.update(alert_rules_id, statistical_period, compute_mode, threshold_value, contact_groups, notify_type, status)
         return rs
 
     @classmethod
@@ -46,8 +46,8 @@ class AlertManager(object):
             return
 
     @classmethod
-    def get_alert_rules_dict(cls, alert_rules_id):
-        rs = AlertRulesData.show_alert_rules(alert_rules_id)
+    def get_alert_rules_dict(cls, service_name):
+        rs = AlertRulesData.show_alert_rules(service_name)
         if rs:
             return  [ line.dump() for line in rs ]
         else:
@@ -62,8 +62,8 @@ class AlertManager(object):
             return
 
     @classmethod
-    def get_alert_rules_by_name(cls, monitor_items):
-        rs = AlertRulesData.get_alert_rules_by_name(monitor_items)
+    def get_alert_rules_by_name(cls, host_id, port, monitor_items):
+        rs = AlertRulesData.get_alert_rules_by_name(host_id, port, monitor_items)
         if rs:
             return rs
         else:
@@ -201,7 +201,7 @@ class Ansible(object):
     @classmethod
     def init_metrics_yaml(cls, service, metrics, host_ip, instance, threshold_value, statistical_period, compute_mode):
 
-        file_name = host_ip + ".yml"
+        file_name = host_ip + '_' + metrics + ".yml"
         yml_file = YML_LOCATION + file_name
 
         yml_rules_rec = service + "_" + metrics + ".yml"

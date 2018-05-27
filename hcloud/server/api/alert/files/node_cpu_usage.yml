@@ -1,0 +1,11 @@
+groups:
+- name: Cpu_Usage_Rule
+  rules:
+  - alert: {{ service }}_{{ monitor_items }}_{{ instance }}
+    expr: (100 - (avg by (exported_instance) (irate(node_cpu{exported_instance="{{ instance }}",mode="idle"}[5m])) * 100)) {{ compute_mode }} {{ threshold_value }}
+    for: {{ statistical_period}}
+    labels:
+        service: node
+    annotations:
+        summary: "High CPU usage detected"
+        description: "current value is = {{'{{'}}$value{{'}}'}}"

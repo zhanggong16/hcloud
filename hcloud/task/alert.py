@@ -9,4 +9,4 @@ def push_alert(cmd, alert_rules_id):
         Check.check_result(res[0], alert_rules_id)
     except Exception as e:
         return {'status': -1, 'result': str(e)}
-    return {'status': status, 'result': res[0]}
+    #return {'status': status, 'result': res[0]}
