@@ -27,23 +27,14 @@ class AlertRulesViews(object):
         'data': fields.List(fields.Nested(alert_rules_data_fields))
     }
 
-    alert_rules_list = {}
-    alert_rules_list['monitor_items'] = fields.String(attribute='monitor_items')
-    alert_rules_list['compute_mode'] = fields.String(attribute='compute_mode')
-    alert_rules_list['threshold_value'] = fields.String(attribute='threshold_value')
-
-    alert_names_list = {}
-    #alert_names_list['name'] = fields.String(attribute='temp_name')
-    alert_names_list['rules'] = fields.List(fields.Nested(alert_rules_list))
-
-    alert_rules = {
-        'name': fields.String(attribute='temp_name'),
-        'rules': fields.List(fields.Nested(alert_rules_list))
-    }
+    alert_rules_dict_fields = {}
+    alert_rules_dict_fields['monitor_items'] = fields.String(attribute='monitor_items')
+    alert_rules_dict_fields['compute_mode'] = fields.String(attribute='compute_mode')
+    alert_rules_dict_fields['threshold_value'] = fields.String(attribute='threshold_value')
 
     alert_rules_view = {
         'service': fields.String(attribute='service'),
-        'names': fields.String(fields.Nested(alert_rules))
+        'names': fields.List(fields.Nested(alert_rules_dict_fields))
     }
 
 
