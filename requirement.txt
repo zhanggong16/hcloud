@@ -62,5 +62,5 @@ urlgrabber==3.10
 urllib3==1.10.2
 vine==1.1.4
 virtualenv==15.2.0
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 yum-metadata-parser==1.1.4
