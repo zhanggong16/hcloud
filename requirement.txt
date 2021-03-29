@@ -41,7 +41,7 @@ psutil==5.4.5
 pyasn1==0.1.9
 pycparser==2.14
 pycurl==7.19.0
-Pygments==1.4
+Pygments==2.7.4
 pygobject==3.14.0
 pygpgme==0.3
 pyliblzma==0.5.3
