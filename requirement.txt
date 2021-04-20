@@ -1,5 +1,5 @@
 amqp==2.2.2
-ansible==2.4.2.0
+ansible==2.9.20
 Babel==0.9.6
 backports.ssl-match-hostname==3.4.0.2
 billiard==3.5.0.3
