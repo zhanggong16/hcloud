@@ -4,7 +4,7 @@ Babel==0.9.6
 backports.ssl-match-hostname==3.4.0.2
 billiard==3.5.0.3
 boto==2.45.0
-celery==4.1.0
+celery==5.2.2
 cffi==1.6.0
 chardet==2.2.1
 Cheetah==2.4.4
