@@ -30,7 +30,7 @@ jsonpointer==1.9
 kombu==4.1.0
 Markdown==2.4.1
 MarkupSafe==0.11
-paramiko==2.1.1
+paramiko==2.10.1
 passlib==1.6.5
 perf==0.1
 Pillow==2.0.0
